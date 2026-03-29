@@ -1,0 +1,31 @@
+---
+description: Run all shell commands and tooling through WSL on Windows
+alwaysApply: true
+---
+
+# Use WSL for everything
+
+This workspace is on Windows, but **all terminal commands, scripts, and CLI tooling must run inside WSL**, not PowerShell or `cmd`.
+
+## Agent behavior
+
+- Prefer **WSL** when invoking the terminal: use `wsl` (or `wsl -e bash -lc '...'`) so commands execute in the Linux environment.
+- Use **WSL paths** for `cd` when chaining inside WSL (e.g. repo under `/mnt/c/Users/.../Documents/hermesloom/files`).
+- Run **git**, **bun**/**npm**/**node**, **curl**, and other CLIs **inside WSL** so behavior matches Linux and avoids Windows-specific issues (e.g. host key, path separators).
+- Do not rely on PowerShell-only syntax (`&&` chaining quirks, `Invoke-WebRequest` as the default) when a POSIX shell in WSL can run the same workflow.
+
+## Example
+
+Instead of running in PowerShell:
+
+```powershell
+cd project; bun run dev
+```
+
+Run via WSL:
+
+```bash
+wsl -e bash -lc 'cd /mnt/c/Users/.../project && bun run dev'
+```
+
+Adjust the distro or flags if the project uses a non-default WSL distribution (`wsl -d DistroName ...`).
